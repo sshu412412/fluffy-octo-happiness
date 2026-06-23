@@ -1,0 +1,1750 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>中期答辩展示网页</title>
+  <style>
+    :root{
+      --green-dark:#1a5c3a;
+      --green-mid:#2e8b57;
+      --green-light:#6abf8a;
+      --green-pale:#e8f5ee;
+      --white:#ffffff;
+      --gray-light:#f5f5f5;
+      --gray-text:#444444;
+      --accent:#e8a020;
+      --border:rgba(26,92,58,.14);
+      --shadow:0 24px 60px rgba(20,68,44,.12);
+      --shadow-soft:0 10px 24px rgba(20,68,44,.08);
+      --radius-xl:28px;
+      --radius-lg:22px;
+      --radius-md:16px;
+      --radius-sm:12px;
+      --container:1440px;
+      --ease:cubic-bezier(.2,.8,.2,1);
+      color-scheme: light;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,-apple-system,sans-serif;
+      color:var(--gray-text);
+      background:
+        radial-gradient(circle at top left, rgba(106,191,138,.18), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(26,92,58,.16), transparent 30%),
+        linear-gradient(180deg, #f9fcfa 0%, #f2f8f4 100%);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(26,92,58,.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(26,92,58,.02) 1px, transparent 1px);
+      background-size:32px 32px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,.14), transparent 72%);
+      opacity:.55;
+      z-index:0;
+    }
+
+    .app{
+      position:relative;
+      z-index:1;
+      width:min(var(--container), calc(100vw - 32px));
+      margin:20px auto 26px;
+    }
+
+    .shell{
+      background:rgba(255,255,255,.86);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.7);
+      border-radius:34px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .nav-shell{
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,251,249,.92));
+      border-bottom:1px solid rgba(26,92,58,.10);
+      backdrop-filter:blur(20px) saturate(1.4);
+      -webkit-backdrop-filter:blur(20px) saturate(1.4);
+      box-shadow:0 6px 22px rgba(20,68,44,.08), 0 1px 0 rgba(255,255,255,.6) inset;
+    }
+
+    .topbar{
+      display:grid;
+      grid-template-columns:254px 1fr auto;
+      gap:24px;
+      align-items:center;
+      min-height:78px;
+      padding:12px 22px 10px;
+    }
+
+    .topbar-brand{
+      display:flex;
+      align-items:center;
+      gap:16px;
+      min-width:0;
+    }
+
+    .topbar-logo{
+      width:254px;
+      height:55px;
+      flex:0 0 auto;
+      display:grid;
+      place-items:center;
+      padding:0 4px;
+      border-radius:14px;
+      background:rgba(26,92,58,.03);
+      border:1px solid rgba(26,92,58,.08);
+      overflow:hidden;
+    }
+
+    .topbar-logo img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      object-position:left center;
+      display:block;
+    }
+
+    .topbar-author{
+      justify-self:end;
+      align-self:center;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:4px;
+      padding:8px 14px;
+      border-radius:14px;
+      background:linear-gradient(135deg, rgba(26,92,58,.06), rgba(46,139,87,.04));
+      border:1px solid rgba(26,92,58,.12);
+      white-space:nowrap;
+      box-shadow:0 4px 10px rgba(20,68,44,.04);
+    }
+
+    .topbar-author .author-kicker{
+      font-size:10px;
+      letter-spacing:.16em;
+      color:#7d8d84;
+      text-transform:uppercase;
+      font-weight:700;
+    }
+
+    .topbar-author .author-line{
+      font-size:14px;
+      font-weight:800;
+      color:var(--green-dark);
+      letter-spacing:.02em;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    }
+
+    .topbar-author .author-line .sep{
+      color:#a8b3ad;
+      margin:0 8px;
+      font-weight:600;
+    }
+
+    .topbar-author .author-line .name{
+      font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    }
+
+    .topbar-copy{
+      min-width:0;
+      display:grid;
+      gap:4px;
+    }
+
+    .topbar-kicker{
+      font-size:12px;
+      letter-spacing:.08em;
+      color:#7d8d84;
+      text-transform:uppercase;
+    }
+
+    .topbar-title{
+      font-size:15px;
+      font-weight:800;
+      color:var(--green-dark);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .topbar-stage{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(26,92,58,.12);
+      color:var(--green-dark);
+      font-size:13px;
+      font-weight:700;
+      box-shadow:0 6px 14px rgba(16,53,34,.05);
+      white-space:nowrap;
+    }
+
+    .topbar-stage .pulse{
+      width:8px;height:8px;border-radius:999px;background:#ffd35f;
+      box-shadow:0 0 0 0 rgba(232,160,32,.55);
+      animation:pulse 2.4s infinite var(--ease);
+    }
+
+    .tabs-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 18px 16px;
+      border-top:1px solid rgba(26,92,58,.06);
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:24px;
+      align-items:center;
+      padding:22px 28px 22px;
+      background:
+        linear-gradient(135deg, rgba(26,92,58,.98), rgba(46,139,87,.94)),
+        radial-gradient(circle at top right, rgba(255,255,255,.1), transparent 40%);
+      color:#fff;
+    }
+
+    .brand{
+      display:flex;
+      align-items:flex-start;
+      gap:0;
+      min-width:0;
+    }
+
+    .brand-copy{min-width:0}
+    .brand-copy .meta{
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:8px 10px;
+      margin-bottom:10px;
+      font-size:12px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.88);
+    }
+
+    .brand-copy .meta .dot{
+      width:4px;height:4px;border-radius:999px;background:rgba(255,255,255,.76);
+    }
+
+    .paper-title{
+      margin:0;
+      font-size:clamp(22px, 2.2vw, 34px);
+      line-height:1.18;
+      letter-spacing:.02em;
+      color:#fff;
+      text-wrap:balance;
+    }
+
+    .paper-subtitle{
+      margin:10px 0 0;
+      font-size:14px;
+      line-height:1.65;
+      color:rgba(255,255,255,.88);
+      max-width:72ch;
+    }
+
+    .hero-info{
+      display:grid;
+      gap:10px;
+      min-width:260px;
+      justify-items:end;
+      text-align:right;
+    }
+
+    .hero-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 13px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.12);
+      color:#fff;
+      font-size:12px;
+      letter-spacing:.06em;
+      backdrop-filter:blur(8px);
+    }
+
+    .hero-badge .pulse{
+      width:8px;height:8px;border-radius:999px;background:#ffd35f;
+      box-shadow:0 0 0 0 rgba(232,160,32,.55);
+      animation:pulse 2.4s infinite var(--ease);
+    }
+
+    .hero-stats{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .stat{
+      min-width:118px;
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.12);
+      backdrop-filter:blur(8px);
+    }
+
+    .stat .label{
+      display:block;
+      font-size:12px;
+      color:rgba(255,255,255,.74);
+      margin-bottom:6px;
+    }
+
+    .stat .value{
+      display:block;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-size:14px;
+      color:#fff;
+    }
+
+    .nav-shell{
+      position:sticky;
+      top:0;
+      z-index:30;
+      background:linear-gradient(180deg, rgba(248,251,249,.98), rgba(248,251,249,.92));
+      border-bottom:1px solid rgba(26,92,58,.08);
+      backdrop-filter:blur(18px);
+      box-shadow:0 10px 24px rgba(20,68,44,.06);
+    }
+
+    .tab-group{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .tab-btn{
+      appearance:none;
+      border:1px solid rgba(26,92,58,.14);
+      background:#fff;
+      color:var(--green-dark);
+      border-radius:999px;
+      padding:0 18px;
+      height:44px;
+      font:600 14px/1 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+      cursor:pointer;
+      transition:transform .2s var(--ease), background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease), box-shadow .2s var(--ease);
+      box-shadow:0 2px 8px rgba(16,53,34,.04);
+    }
+
+    .tab-btn:hover{transform:translateY(-1px);border-color:rgba(46,139,87,.28)}
+    .tab-btn[aria-selected="true"]{
+      background:linear-gradient(135deg, var(--green-dark), var(--green-mid));
+      color:#fff;
+      border-color:transparent;
+      box-shadow:0 14px 28px rgba(26,92,58,.24);
+    }
+
+    .nav-tools{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+
+    .toggle,
+    .action-btn,
+    .select{
+      border:1px solid rgba(26,92,58,.14);
+      background:#fff;
+      border-radius:14px;
+      color:var(--green-dark);
+      height:42px;
+      padding:0 14px;
+      font:600 13px/1 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+      box-shadow:0 6px 14px rgba(16,53,34,.05);
+    }
+
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+    }
+
+    .switch{
+      width:42px;
+      height:24px;
+      background:#d5e6dc;
+      border-radius:999px;
+      position:relative;
+      flex:0 0 auto;
+      transition:background .22s var(--ease);
+    }
+
+    .switch::after{
+      content:"";
+      position:absolute;
+      top:3px;
+      left:3px;
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      background:#fff;
+      box-shadow:0 4px 12px rgba(0,0,0,.16);
+      transition:transform .22s var(--ease);
+    }
+
+    .toggle[data-on="true"] .switch{background:linear-gradient(135deg, var(--green-mid), var(--green-dark))}
+    .toggle[data-on="true"] .switch::after{transform:translateX(18px)}
+
+    .status-dot{
+      width:8px;height:8px;border-radius:999px;background:var(--accent);
+      box-shadow:0 0 0 6px rgba(232,160,32,.12);
+      margin-right:2px;
+    }
+
+    .select{
+      min-width:140px;
+      appearance:none;
+      background-image:linear-gradient(45deg, transparent 50%, var(--green-dark) 50%), linear-gradient(135deg, var(--green-dark) 50%, transparent 50%);
+      background-position:calc(100% - 18px) 18px, calc(100% - 12px) 18px;
+      background-size:6px 6px, 6px 6px;
+      background-repeat:no-repeat;
+      padding-right:34px;
+    }
+
+    .content{
+      padding:24px 18px 12px;
+    }
+
+    .panel{
+      display:none;
+      animation:fadeUp .36s var(--ease) both;
+    }
+
+    .panel.active{display:block}
+
+    .panel-frame{
+      max-width:1240px;
+      margin:0 auto;
+      display:grid;
+      gap:22px;
+    }
+
+    .section-grid{
+      display:grid;
+      gap:22px;
+    }
+
+    .two-col{
+      grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+    }
+
+    .three-col{
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+    }
+
+    .card{
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow-soft);
+      overflow:hidden;
+    }
+
+    .card-pad{padding:26px}
+    .card-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .card-title{
+      margin:0;
+      font-size:20px;
+      line-height:1.28;
+      color:var(--green-dark);
+    }
+
+    .card-desc{
+      margin:8px 0 0;
+      font-size:14px;
+      line-height:1.85;
+      color:#5a6861;
+      max-width:64ch;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:var(--green-pale);
+      color:var(--green-dark);
+      border:1px solid rgba(26,92,58,.08);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:.02em;
+      white-space:nowrap;
+    }
+
+    .pill.orange{background:rgba(232,160,32,.12);color:#99650a}
+    .pill.green{background:rgba(46,139,87,.12);color:var(--green-dark)}
+
+    .display-title{
+      font-size:clamp(28px, 3.2vw, 46px);
+      line-height:1.08;
+      color:var(--green-dark);
+      margin:0 0 14px;
+      text-wrap:balance;
+    }
+
+    .lead{
+      font-size:15px;
+      line-height:1.95;
+      color:#4f5f57;
+      margin:0;
+    }
+
+    .callout{
+      margin-top:18px;
+      padding:16px 18px;
+      border-radius:20px;
+      background:linear-gradient(135deg, rgba(232,245,238,.98), rgba(255,255,255,.94));
+      border:1px solid rgba(106,191,138,.24);
+    }
+
+    .callout strong{color:var(--green-dark)}
+
+    .subquestion-grid{
+      display:grid;
+      gap:14px;
+      margin-top:22px;
+    }
+
+    .subquestion{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:14px;
+      padding:18px 18px;
+      border-radius:20px;
+      background:#fff;
+      border:1px solid rgba(26,92,58,.08);
+      align-items:start;
+    }
+
+    .subquestion .num{
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      color:#fff;
+      background:linear-gradient(135deg, var(--green-mid), var(--green-dark));
+      box-shadow:0 10px 18px rgba(26,92,58,.16);
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    }
+
+    .subquestion h4{
+      margin:0 0 6px;
+      color:var(--green-dark);
+      font-size:16px;
+    }
+
+    .subquestion p{
+      margin:0;
+      font-size:13px;
+      line-height:1.7;
+      color:#55645c;
+    }
+
+    .list{
+      display:grid;
+      gap:12px;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+
+    .list li{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      line-height:1.65;
+      font-size:14px;
+      color:#516059;
+    }
+
+    .bullet{
+      width:8px;height:8px;border-radius:999px;background:var(--green-mid);margin-top:8px;flex:0 0 auto;
+      box-shadow:0 0 0 4px rgba(46,139,87,.08);
+    }
+
+    .framework{
+      position:relative;
+      overflow:hidden;
+      min-height:100%;
+    }
+
+    .framework::after{
+      content:"";
+      position:absolute;
+      inset:auto -20% -18% auto;
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(106,191,138,.18), rgba(106,191,138,0) 68%);
+      pointer-events:none;
+    }
+
+    .framework-grid{
+      display:grid;
+      gap:14px;
+    }
+
+    .framework-item{
+      padding:16px 18px;
+      border-radius:18px;
+      background:rgba(232,245,238,.78);
+      border:1px solid rgba(26,92,58,.08);
+    }
+
+    .framework-item .k{
+      display:block;
+      font-size:12px;
+      letter-spacing:.06em;
+      color:#648173;
+      margin-bottom:6px;
+    }
+
+    .framework-item .v{
+      display:block;
+      color:var(--green-dark);
+      line-height:1.7;
+      font-size:14px;
+    }
+
+    .progress-list{
+      display:grid;
+      gap:18px;
+    }
+
+    .progress-row{
+      display:grid;
+      grid-template-columns:minmax(220px,.95fr) 1.35fr auto;
+      gap:16px;
+      align-items:center;
+      padding:18px 20px;
+      border-radius:20px;
+      background:#fff;
+      border:1px solid rgba(26,92,58,.08);
+    }
+
+    .progress-row strong{
+      color:var(--green-dark);
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .bar{
+      position:relative;
+      height:12px;
+      border-radius:999px;
+      background:#edf3ef;
+      overflow:hidden;
+    }
+
+    .bar > span{
+      position:absolute;
+      inset:0 auto 0 0;
+      width:0%;
+      border-radius:inherit;
+      background:linear-gradient(90deg, var(--green-mid), #64ba86);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+      transition:width 1.1s var(--ease);
+    }
+
+    .progress-row .pct{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      color:var(--green-dark);
+      font-weight:800;
+    }
+
+    details.chapter{
+      border:1px solid rgba(26,92,58,.08);
+      border-radius:20px;
+      background:#fff;
+      overflow:hidden;
+    }
+
+    details.chapter + details.chapter{margin-top:18px}
+
+    details.chapter summary{
+      cursor:pointer;
+      list-style:none;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      padding:22px 24px;
+      color:var(--green-dark);
+      font-weight:800;
+      font-size:16px;
+    }
+
+    details.chapter summary::-webkit-details-marker{display:none}
+
+    .chapter-main{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .chapter-tag{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(26,92,58,.08);
+      color:var(--green-dark);
+      font-size:12px;
+      font-weight:700;
+      flex:0 0 auto;
+    }
+
+    .chapter-body{
+      padding:0 24px 24px;
+      border-top:1px solid rgba(26,92,58,.08);
+    }
+
+    .chapter-body .cols{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+      margin-top:20px;
+    }
+
+    .mini-block{
+      padding:18px 20px;
+      background:var(--green-pale);
+      border:1px solid rgba(106,191,138,.16);
+      border-radius:18px;
+    }
+
+    .mini-block h5{
+      margin:0 0 10px;
+      color:var(--green-dark);
+      font-size:13px;
+      letter-spacing:.02em;
+    }
+
+    .mini-block p,
+    .mini-block li{
+      font-size:13px;
+      line-height:1.85;
+      color:#55645c;
+    }
+
+    .timeline{
+      position:relative;
+      display:grid;
+      gap:18px;
+      padding-left:18px;
+    }
+
+    .timeline::before{
+      content:"";
+      position:absolute;
+      left:6px;
+      top:6px;
+      bottom:6px;
+      width:2px;
+      background:linear-gradient(180deg, rgba(26,92,58,.18), rgba(46,139,87,.45));
+    }
+
+    .timeline-item{
+      position:relative;
+      padding:20px 22px 20px 26px;
+      background:#fff;
+      border:1px solid rgba(26,92,58,.08);
+      border-radius:20px;
+    }
+
+    .timeline-item::before{
+      content:"";
+      position:absolute;
+      left:-18px;
+      top:24px;
+      width:12px;
+      height:12px;
+      border-radius:999px;
+      background:var(--green-mid);
+      box-shadow:0 0 0 5px rgba(46,139,87,.12);
+    }
+
+    .timeline-item.current{
+      background:linear-gradient(135deg, rgba(232,245,238,.98), rgba(255,255,255,.98));
+      border-color:rgba(106,191,138,.28);
+      box-shadow:0 16px 28px rgba(20,68,44,.08);
+    }
+
+    .timeline-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+
+    .timeline-top strong{
+      color:var(--green-dark);
+      font-size:15px;
+    }
+
+    .timeline-top span{
+      color:#7a8a81;
+      font-size:12px;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      white-space:nowrap;
+    }
+
+    table.plan-table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:18px;
+      border:1px solid rgba(26,92,58,.08);
+      background:#fff;
+    }
+
+    .plan-table th,
+    .plan-table td{
+      padding:18px 20px;
+      text-align:left;
+      vertical-align:top;
+      border-bottom:1px solid rgba(26,92,58,.07);
+      font-size:14px;
+      line-height:1.9;
+    }
+
+    .plan-table th{
+      background:var(--green-pale);
+      color:var(--green-dark);
+      font-size:13px;
+      letter-spacing:.02em;
+    }
+
+    .plan-table tr:last-child td{border-bottom:none}
+
+    .highlight-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:18px;
+    }
+
+    .highlight-card{
+      position:relative;
+      padding:26px 24px 24px;
+      border-radius:26px;
+      overflow:hidden;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.96), rgba(232,245,238,.88));
+      border:1px solid rgba(26,92,58,.08);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .highlight-card::after{
+      content:attr(data-index);
+      position:absolute;
+      right:16px;
+      top:8px;
+      font-size:66px;
+      line-height:1;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-weight:900;
+      color:rgba(26,92,58,.08);
+    }
+
+    .highlight-card h3{
+      margin:0 0 14px;
+      color:var(--green-dark);
+      font-size:20px;
+      line-height:1.28;
+      padding-right:54px;
+    }
+
+    .highlight-card ul{
+      margin:0;
+      padding-left:20px;
+      color:#55645c;
+      line-height:1.9;
+      font-size:14px;
+    }
+
+    .closing{
+      text-align:center;
+      padding:48px 22px 38px;
+      background:
+        radial-gradient(circle at center, rgba(106,191,138,.16), transparent 48%),
+        linear-gradient(135deg, rgba(255,255,255,.98), rgba(232,245,238,.92));
+      border:1px solid rgba(26,92,58,.08);
+      border-radius:32px;
+      box-shadow:var(--shadow-soft);
+    }
+
+    .closing h2{
+      margin:0;
+      font-size:clamp(30px, 4vw, 56px);
+      line-height:1.12;
+      color:var(--green-dark);
+      text-wrap:balance;
+    }
+
+    .closing p{
+      margin:14px auto 0;
+      max-width:56ch;
+      font-size:16px;
+      line-height:1.9;
+      color:#4f5f57;
+    }
+
+    .closing .thanks{
+      margin-top:20px;
+      display:inline-block;
+      padding:14px 20px;
+      border-radius:999px;
+      background:linear-gradient(135deg, var(--green-dark), var(--green-mid));
+      color:#fff;
+      font-weight:800;
+      box-shadow:0 18px 30px rgba(26,92,58,.24);
+    }
+
+    .footer{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      justify-content:space-between;
+      align-items:center;
+      padding:16px 20px 22px;
+      color:#6d7b73;
+      font-size:13px;
+    }
+
+    .footer strong{color:var(--green-dark)}
+
+    .hidden-select{
+      position:absolute;
+      left:-9999px;
+      width:1px;
+      height:1px;
+      opacity:0;
+    }
+
+    [data-editable="true"]{
+      outline:2px dashed rgba(46,139,87,.18);
+      outline-offset:4px;
+      border-radius:10px;
+      transition:outline-color .2s var(--ease), background-color .2s var(--ease);
+    }
+
+    [data-editable="true"]:focus{
+      outline-color:rgba(232,160,32,.45);
+      background:rgba(255,248,231,.55);
+    }
+
+    .mobile-only{display:none}
+
+    @keyframes pulse{
+      0%{box-shadow:0 0 0 0 rgba(232,160,32,.55)}
+      70%{box-shadow:0 0 0 12px rgba(232,160,32,0)}
+      100%{box-shadow:0 0 0 0 rgba(232,160,32,0)}
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0; transform:translateY(8px)}
+      to{opacity:1; transform:translateY(0)}
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+      *,*::before,*::after{animation:none !important; transition:none !important}
+    }
+
+    @media (max-width: 1180px){
+      .topbar{grid-template-columns:auto 1fr auto; gap:14px}
+      .topbar-logo{width:200px; height:46px}
+      .topbar-author{padding:6px 10px}
+      .topbar-author .author-line{font-size:13px}
+      .topbar-brand{flex-wrap:wrap}
+      .topbar-stage{justify-self:start}
+      .hero{grid-template-columns:1fr}
+      .hero-info{grid-column:1 / -1; justify-items:start; text-align:left; min-width:0}
+      .two-col,
+      .three-col,
+      .highlight-grid{grid-template-columns:1fr}
+      .chapter-body .cols{grid-template-columns:1fr}
+      .progress-row{grid-template-columns:1fr; gap:10px}
+      .progress-row .pct{justify-self:start}
+    }
+
+    @media (max-width: 760px){
+      .app{width:min(calc(100vw - 18px), var(--container)); margin:8px auto 18px}
+      .shell{border-radius:24px}
+      .topbar{grid-template-columns:auto 1fr; gap:10px; padding:8px 12px 6px; min-height:unset}
+      .topbar-logo{width:min(100%, 170px); height:42px}
+      .topbar-brand{grid-column:1 / -1; order:3}
+      .topbar-author{padding:5px 10px}
+      .topbar-author .author-line{font-size:12px}
+      .topbar-author .author-kicker{font-size:9px}
+      .topbar-title{white-space:normal; font-size:13px}
+      .tabs-row{padding:10px 12px 12px}
+      .hero{padding:18px 16px 16px; gap:16px}
+      .paper-title{font-size:22px}
+      .paper-subtitle{font-size:13px}
+      .hero-stats{width:100%; justify-content:flex-start}
+      .tab-group{display:none}
+      .mobile-only{display:block}
+      .content{padding:14px 12px 6px}
+      .card-pad{padding:18px}
+      .card-title{font-size:18px}
+      .display-title{font-size:26px}
+      .closing{padding:28px 16px 24px}
+      .footer{padding:12px 14px 16px}
+    }
+  </style>
+</head>
+  <body>
+  <div class="app">
+    <div class="shell">
+      <div class="nav-shell">
+        <div class="topbar">
+          <div class="topbar-logo" aria-label="中国劳动关系学院校徽">
+            <img src="微信图片_20260527194817_534_42.png" alt="中国劳动关系学院校徽" />
+          </div>
+          <div class="topbar-brand">
+            <div class="topbar-copy">
+              <div class="topbar-kicker">中国劳动关系学院 · 中期答辩展示</div>
+              <div class="topbar-title" data-editable-target="meta.title"></div>
+            </div>
+          </div>
+          <div class="topbar-author" aria-label="作者信息">
+            <span class="author-kicker">答辩人</span>
+            <span class="author-line">
+              <span class="name">舒畅</span><span class="sep">|</span><span>2412311004</span>
+            </span>
+          </div>
+        </div>
+        <div class="tabs-row">
+          <div class="tab-group" role="tablist" aria-label="答辩展示导航">
+            <button class="tab-btn" role="tab" aria-selected="true" data-tab="overview">概览</button>
+            <button class="tab-btn" role="tab" aria-selected="false" data-tab="completed">已完成</button>
+            <button class="tab-btn" role="tab" aria-selected="false" data-tab="todo">待完成</button>
+            <button class="tab-btn" role="tab" aria-selected="false" data-tab="plan">计划</button>
+            <button class="tab-btn" role="tab" aria-selected="false" data-tab="highlights">亮点</button>
+            <button class="tab-btn" role="tab" aria-selected="false" data-tab="ending">结语</button>
+          </div>
+          <div class="nav-tools">
+            <select class="select mobile-only" id="mobileTab" aria-label="切换页面">
+            </select>
+            <button class="toggle" id="editToggle" data-on="false" type="button">
+              <span class="switch" aria-hidden="true"></span>
+              <span id="editLabel">编辑模式关闭</span>
+            </button>
+            <button class="action-btn" id="copyBtn" type="button">复制全部内容</button>
+          </div>
+        </div>
+      </div>
+
+      <main class="content">
+        <section class="panel active" data-panel="overview"></section>
+        <section class="panel" data-panel="completed"></section>
+        <section class="panel" data-panel="todo"></section>
+        <section class="panel" data-panel="plan"></section>
+        <section class="panel" data-panel="highlights"></section>
+        <section class="panel" data-panel="ending"></section>
+      </main>
+
+      <footer class="footer">
+        <div>提示：开启编辑模式后，可直接修改页面文本，复制按钮会抓取当前全部内容</div>
+      </footer>
+    </div>
+  </div>
+
+  <textarea class="hidden-select" id="clipboardSink" readonly></textarea>
+
+  <script>
+    const data = {
+      meta: {
+        title: "党建引领下新就业群体社会服务协同治理的实践与挑战——以J社会服务项目为例",
+        subtitle: "硕士论文中期答辩展示网页 · 单页应用 · 分区块切换 · 支持现场编辑与内容复制",
+        stage: "中期答辩展示 / 当前汇报",
+        author: "舒畅 | 2024级MSW | 2412311004",
+        advisor: "原会建 | 副教授",
+        case: "B市JT地区J社会服务项目（2019年至今）"
+      },
+      tabs: {
+        overview: {
+          heading: "论文概览",
+          lead: "本研究以党建引领下的新就业群体社会服务协同治理为核心议题，聚焦J社会服务项目从“歇脚”问题出发，如何逐步形成协同治理网络、在运行中暴露张力，并进一步讨论优化路径。",
+          question: "协同治理视角下，党建引领如何贯穿新就业群体社会服务的实践过程？",
+          subquestions: [
+            {
+              title: "党建引领如何推动协同治理格局形成？",
+              desc: "关注从问题发现、组织动员到资源整合的初始联结过程。"
+            },
+            {
+              title: "党建引领面临哪些内在张力与困境？",
+              desc: "聚焦协同过程中的目标错位、资源碎片化与制度弹性不足。"
+            },
+            {
+              title: "如何优化党建引领下的协同治理机制？",
+              desc: "面向机制建设，讨论如何从活动驱动走向机制驱动。"
+            }
+          ],
+          framework: [
+            { k: "理论视角", v: "协同治理理论 + 党建引领本土化" },
+            { k: "研究方法", v: "参与式观察（180小时）/ 半结构化访谈（已9人次，预计20人次）/ 政策文本分析" },
+            { k: "案例边界", v: "B市JT地区J社会服务项目，追踪2019年至今的演变过程" },
+            { k: "分析路径", v: "历时脉络追踪，强调动态过程而非静态对照" }
+          ]
+        },
+        completed: {
+          heading: "已完成内容",
+          progress: [
+            { title: "第一章 绪论", value: 100, state: "已完成" },
+            { title: "第二章 理论基础与研究设计", value: 100, state: "已完成" },
+            { title: "第三章 项目缘起（2019-2021）", value: 100, state: "已完成" },
+            { title: "第四章 服务拓展阶段", value: 40, state: "进行中" },
+            { title: "第五章 协同困境", value: 0, state: "待写" },
+            { title: "第六章 优化路径", value: 0, state: "待写" },
+            { title: "第七章 结论与讨论", value: 0, state: "待写" }
+          ],
+          chapters: [
+            {
+              title: "第一章 绪论",
+              tag: "研究基础",
+              summary: "研究背景、问题意识、文献综述、研究方法与文献缺口。",
+              blocks: [
+                {
+                  title: "核心内容",
+                  items: [
+                    "研究背景：平台经济崛起，新就业群体规模扩大，基层治理出现新挑战。",
+                    "研究问题：党建引领如何推动协同治理、面临哪些困境、如何优化机制。",
+                    "文献综述：协同治理理论、党建引领、新就业群体、社会服务递送四个板块。"
+                  ]
+                },
+                {
+                  title: "章节亮点",
+                  items: [
+                    "识别出“宏观治理研究多、微观过程追踪少”的文献缺口。",
+                    "以案例研究法贯穿全文，强调多元资料来源。"
+                  ]
+                }
+              ]
+            },
+            {
+              title: "第二章 理论基础与研究设计",
+              tag: "方法设计",
+              summary: "协同治理理论的四层次应用、研究设计与伦理框架。",
+              blocks: [
+                {
+                  title: "理论运用",
+                  items: [
+                    "围绕形成过程、运作逻辑、困境张力、优化方向四层次展开。",
+                    "从历时脉络追踪项目变化，强调动态视角。"
+                  ]
+                },
+                {
+                  title: "研究设计与伦理",
+                  items: [
+                    "案例选择依据：典型性、可及性、理论适配性。",
+                    "访谈已完成9人次，覆盖5类主体，预计总计20人次。",
+                    "知情同意、匿名处理、资料保密、无害原则。"
+                  ]
+                }
+              ]
+            },
+            {
+              title: "第三章 项目缘起与协同治理初始构建",
+              tag: "历程起点",
+              summary: "从基层问题驱动出发，呈现协同治理结构如何被逐步建构。",
+              blocks: [
+                {
+                  title: "项目起点",
+                  items: [
+                    "2019年冬，党委书记观察到户外工作者休息困境，形成问题驱动。",
+                    "逻辑从“歇脚”需求转化为党建引领下的协同治理实践。"
+                  ]
+                },
+                {
+                  title: "结构形成",
+                  items: [
+                    "品牌创立、首家暖心驿站（2021.9）、流动党支部（2021.9）等关键事件。",
+                    "党工同建结构、4人专班与三层资源库雏形逐步形成。",
+                    "构建生理、安全、信息、发展、尊重五层次需求矩阵。"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        todo: {
+          heading: "待完成章节规划",
+          chapters: [
+            {
+              title: "第四章：服务拓展与协同治理网络的深化运行（2021-2023年）",
+              core: "党建引领通过政治权威降低资源协调成本，16位项目管理人体系形成。",
+              sections: [
+                "第一节：服务对象的聚焦，从新居民到新就业群体",
+                "第二节：资源整合的深化，六大资源类型与依赖关系",
+                "第三节：主体协同网络的扩展与制度保障（联席会议等）",
+                "第四节：党建引领的统筹作用和信任关系的深化",
+                "第五节：小结：协同网络形成与党建引领持续嵌入"
+              ],
+              materials: "拓展阶段服务台账、企业合作协议、联席会议记录"
+            },
+            {
+              title: "第五章：协同治理运行中的现实困境与内在张力（2023年至今）",
+              core: "党建引领既是协同治理推力，也带来考核错位、运动式供给等内在矛盾。",
+              sections: [
+                "第一节：主体协同分歧（目标错位 / 利益冲突）",
+                "第二节：资源碎片化",
+                "第三节：制度保障弹性不足",
+                "第四节：信任关系依赖个人",
+                "第五节：党建引领的内在张力（考核导向错位 / 运动式特征）",
+                "第六节：小结：协同治理效能衰减和张力显现"
+              ],
+              materials: "后续访谈（尤其是企业/社区干部视角）、项目反馈记录"
+            },
+            {
+              title: "第六章：协同治理的优化路径与机制完善",
+              core: "从“活动驱动”转向“机制驱动”，形成可持续优化框架。",
+              sections: [
+                "第一节：主体协同平台完善",
+                "第二节：资源整合共享",
+                "第三节：制度保障",
+                "第四节：信任关系可持续",
+                "第五节：小结：协同治理优化的四个维度"
+              ],
+              materials: "优化建议访谈、政策文本对比分析"
+            },
+            {
+              title: "第七章：结论与讨论",
+              core: "总结四阶段党建引领协同治理路径、提炼实践启示，并说明研究局限。",
+              sections: [
+                "第一节：四阶段党建引领协同治理的实践路径与挑战总结",
+                "第二节：实践启示",
+                "第三节：局限与展望"
+              ],
+              materials: "全文回收整理、关键结论提炼、导师反馈修订"
+            }
+          ]
+        },
+        plan: {
+          heading: "研究进度与计划",
+          timeline: [
+            { time: "2025.09", title: "进入项目实习，开始参与式观察", detail: "建立现场观察记录，进入项目运行场景。" },
+            { time: "2025.09-10", title: "完成第一批访谈（9人次）", detail: "覆盖不同主体，初步形成证据框架。" },
+            { time: "2025.10-12", title: "完成第一至三章初稿", detail: "形成绪论、理论设计与项目缘起的结构化文本。" },
+            { time: "2026.01", title: "完成第9次访谈（地区干部F）", detail: "继续补充不同视角，增强材料厚度。" },
+            { time: "2026.06", title: "当前：中期答辩", detail: "对已完成内容与后续安排进行汇报。" , current:true},
+            { time: "2026.07-08", title: "撰写第五章（困境张力）", detail: "集中整理现实困境与内在张力证据。" },
+            { time: "2026.09", title: "撰写第六章（优化路径）", detail: "形成机制完善的分析框架。" },
+            { time: "2026.10", title: "撰写第七章（结论）", detail: "完成结论与讨论章节。" },
+            { time: "2026.11", title: "全文修改、格式规范", detail: "统一体例，完成论文定稿准备。" },
+            { time: "2027", title: "提交终稿答辩", detail: "进入终稿提交与答辩环节。" }
+          ],
+          interviews: [
+            { subject: "街道党工委工作人员", count: "2", topic: "拓展阶段决策过程、内在张力" },
+            { subject: "社区干部", count: "3", topic: "落地执行困难、资源碎片化感受" },
+            { subject: "社会组织工作者", count: "2", topic: "专业供给不足、制度弹性" },
+            { subject: "辖区企业/平台负责人", count: "2", topic: "合作动机、考核压力" },
+            { subject: "新就业群体代表", count: "2", topic: "参与感、需求变化" }
+          ]
+        },
+        highlights: {
+          heading: "研究亮点与创新点",
+          cards: [
+            {
+              title: "理论视角创新",
+              items: [
+                "将协同治理理论作为动态分析视角，而非静态对照框架。",
+                "将党建引领定位为中国语境下协同治理的本土化要素。",
+                "补足“宏观治理多、微观过程少”的文献缺口。"
+              ]
+            },
+            {
+              title: "实证方法创新",
+              items: [
+                "研究者以实习身份进入项目，参与式观察180小时。",
+                "历时追踪2019—2026年完整项目生命周期。",
+                "多源资料交叉验证：访谈、观察、政策文本、服务台账。"
+              ]
+            },
+            {
+              title: "实务导向",
+              items: [
+                "关注社工作为资源链接者、协调者、倡导者的专业功能。",
+                "从“静态描述”转向“历时追踪”。",
+                "为基层治理优化提供可操作参考。"
+              ]
+            }
+          ]
+        },
+        ending: {
+          title: "感谢各位老师批评指正！",
+          body: "感谢原会建副教授的悉心指导，感谢“将小爱”项目组和访谈对象的支持。恳请各位老师批评指正。",
+          note: "这页适合答辩最后停留 5-10 秒，便于老师给出反馈。"
+        }
+      }
+    };
+
+    const state = {
+      currentTab: "overview",
+      editMode: false
+    };
+
+    const panelMap = new Map();
+    const tabs = Array.from(document.querySelectorAll(".tab-btn"));
+    const mobileTab = document.getElementById("mobileTab");
+    const editToggle = document.getElementById("editToggle");
+    const editLabel = document.getElementById("editLabel");
+    const copyBtn = document.getElementById("copyBtn");
+    const clipboardSink = document.getElementById("clipboardSink");
+
+    document.querySelectorAll(".panel").forEach(panel => panelMap.set(panel.dataset.panel, panel));
+
+    function setValueByPath(path, value) {
+      const keys = path.split(".");
+      let target = data;
+      for (let i = 0; i < keys.length - 1; i++) target = target[keys[i]];
+      target[keys[keys.length - 1]] = value;
+    }
+
+    function getValueByPath(path) {
+      return path.split(".").reduce((acc, key) => acc?.[key], data);
+    }
+
+    function makeEditable(root) {
+      root.querySelectorAll("[data-editable-target]").forEach(el => {
+        const path = el.dataset.editableTarget;
+        el.dataset.editable = state.editMode ? "true" : "false";
+        el.contentEditable = state.editMode ? "true" : "false";
+        if (!state.editMode) return;
+        if (!el.dataset.bound) {
+          el.addEventListener("input", () => {
+            setValueByPath(path, el.innerText.replace(/\u00a0/g, " ").trimEnd());
+            if (path === "meta.title" || path === "meta.subtitle") {
+              renderHeader();
+            }
+          });
+          el.dataset.bound = "1";
+        }
+      });
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderHeader() {
+      document.querySelectorAll("[data-editable-target]").forEach(el => {
+        const path = el.dataset.editableTarget;
+        const value = getValueByPath(path);
+        if (el.tagName === "H1" || el.tagName === "P" || el.tagName === "SPAN" || el.tagName === "DIV") {
+          if (el.textContent !== value) el.textContent = value;
+        }
+      });
+      makeEditable(document);
+    }
+
+    function overviewTemplate() {
+      const t = data.tabs.overview;
+      return `
+        <div class="panel-frame section-grid two-col">
+          <article class="card card-pad">
+            <div class="card-head">
+              <div>
+                <div class="pill green">论文概览</div>
+                <h2 class="display-title" data-editable-target="tabs.overview.question"></h2>
+                <p class="lead" data-editable-target="tabs.overview.lead"></p>
+              </div>
+            </div>
+            <div class="callout">
+              <strong>核心研究问题：</strong>
+              <span data-editable-target="tabs.overview.question"></span>
+            </div>
+            <div class="subquestion-grid">
+              ${t.subquestions.map((item, idx) => `
+                <div class="subquestion">
+                  <div class="num">${idx + 1}</div>
+                  <div>
+                    <h4>${escapeHtml(item.title)}</h4>
+                    <p>${escapeHtml(item.desc)}</p>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+
+          <aside class="card card-pad framework">
+            <div class="card-head">
+              <div>
+                <div class="pill">研究框架</div>
+                <h3 class="card-title">理论、方法与案例边界</h3>
+                <p class="card-desc">左侧看问题，右侧看方法和材料，适合答辩时快速定位研究逻辑。</p>
+              </div>
+            </div>
+            <div class="framework-grid">
+              ${t.framework.map(item => `
+                <div class="framework-item">
+                  <span class="k">${escapeHtml(item.k)}</span>
+                  <span class="v">${escapeHtml(item.v)}</span>
+                </div>
+              `).join("")}
+            </div>
+          </aside>
+        </div>
+      `;
+    }
+
+    function completedTemplate() {
+      const t = data.tabs.completed;
+      return `
+        <div class="panel-frame section-grid" style="gap:24px">
+          <article class="card card-pad">
+            <div class="card-head">
+              <div>
+                <div class="pill green">完成情况总览</div>
+                <h2 class="card-title">章节进度一眼可见</h2>
+                <p class="card-desc">已完成的章节用高亮完成度展示，未完成部分保持低调，便于答辩现场明确当前工作状态。</p>
+              </div>
+            </div>
+            <div class="progress-list">
+              ${t.progress.map(item => `
+                <div class="progress-row">
+                  <strong>${escapeHtml(item.title)}</strong>
+                  <div class="bar" aria-label="${escapeHtml(item.title)} 进度">
+                    <span data-progress="${item.value}"></span>
+                  </div>
+                  <div class="pct">${item.value}% · ${escapeHtml(item.state)}</div>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+
+          <div>
+            ${t.chapters.map((chapter, idx) => `
+              <details class="chapter" ${idx === 0 ? "open" : ""}>
+                <summary>
+                  <span class="chapter-main">
+                    <span class="chapter-tag">${escapeHtml(chapter.tag)}</span>
+                    <span>${escapeHtml(chapter.title)}</span>
+                  </span>
+                  <span class="pill">${escapeHtml(chapter.summary)}</span>
+                </summary>
+                <div class="chapter-body">
+                  <div class="cols">
+                    ${chapter.blocks.map(block => `
+                      <div class="mini-block">
+                        <h5>${escapeHtml(block.title)}</h5>
+                        <ul style="margin:0;padding-left:18px">
+                          ${block.items.map(i => `<li>${escapeHtml(i)}</li>`).join("")}
+                        </ul>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+              </details>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function todoTemplate() {
+      const t = data.tabs.todo;
+      return `
+        <div class="panel-frame section-grid two-col">
+          ${t.chapters.map(chapter => `
+            <article class="card card-pad">
+              <div class="card-head">
+                <div>
+                  <div class="pill orange">待完成章节</div>
+                  <h2 class="card-title">${escapeHtml(chapter.title)}</h2>
+                </div>
+              </div>
+              <div class="mini-block" style="margin-top:10px">
+                <h5>核心论点</h5>
+                <p style="margin:0">${escapeHtml(chapter.core)}</p>
+              </div>
+              <div class="mini-block" style="margin-top:16px">
+                <h5>章节结构</h5>
+                <ul style="margin:0;padding-left:18px">
+                  ${chapter.sections.map(s => `<li>${escapeHtml(s)}</li>`).join("")}
+                </ul>
+              </div>
+              <div class="mini-block" style="margin-top:16px">
+                <h5>所需资料</h5>
+                <p style="margin:0">${escapeHtml(chapter.materials)}</p>
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function planTemplate() {
+      const t = data.tabs.plan;
+      return `
+        <div class="panel-frame section-grid two-col">
+          <article class="card card-pad">
+            <div class="card-head">
+              <div>
+                <div class="pill green">时间轴</div>
+                <h2 class="card-title">研究推进节点</h2>
+                <p class="card-desc">把项目节奏做成纵向时间线，答辩现场更容易说明“已做什么、接下来做什么”。</p>
+              </div>
+            </div>
+            <div class="timeline">
+              ${t.timeline.map(item => `
+                <div class="timeline-item ${item.current ? "current" : ""}">
+                  <div class="timeline-top">
+                    <strong>${escapeHtml(item.title)}</strong>
+                    <span>${escapeHtml(item.time)}</span>
+                  </div>
+                  <div class="card-desc" style="margin:0">${escapeHtml(item.detail)}</div>
+                </div>
+              `).join("")}
+            </div>
+          </article>
+
+          <article class="card card-pad">
+            <div class="card-head">
+              <div>
+                <div class="pill">待完成访谈计划</div>
+                <h2 class="card-title">补充材料安排</h2>
+                <p class="card-desc">将访谈对象、访谈人次和重点议题并列展示，方便老师快速判断后续工作量。</p>
+              </div>
+            </div>
+            <table class="plan-table">
+              <thead>
+                <tr>
+                  <th>计划访谈主体</th>
+                  <th>人次</th>
+                  <th>重点议题</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${t.interviews.map(row => `
+                  <tr>
+                    <td>${escapeHtml(row.subject)}</td>
+                    <td><strong>${escapeHtml(row.count)}</strong></td>
+                    <td>${escapeHtml(row.topic)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </article>
+        </div>
+      `;
+    }
+
+    function highlightsTemplate() {
+      const t = data.tabs.highlights;
+      return `
+        <div class="panel-frame highlight-grid">
+          ${t.cards.map((card, idx) => `
+            <article class="highlight-card" data-index="0${idx + 1}">
+              <h3>${escapeHtml(card.title)}</h3>
+              <ul>
+                ${card.items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+              </ul>
+            </article>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function endingTemplate() {
+      const t = data.tabs.ending;
+      return `
+        <div class="panel-frame">
+          <div class="closing">
+          <h2>${escapeHtml(t.title)}</h2>
+          <p>${escapeHtml(t.body)}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTab(tabName) {
+      state.currentTab = tabName;
+      tabs.forEach(btn => btn.setAttribute("aria-selected", String(btn.dataset.tab === tabName)));
+      mobileTab.value = tabName;
+      Object.values(data.tabs);
+      const panel = panelMap.get(tabName);
+      let html = "";
+      if (tabName === "overview") html = overviewTemplate();
+      if (tabName === "completed") html = completedTemplate();
+      if (tabName === "todo") html = todoTemplate();
+      if (tabName === "plan") html = planTemplate();
+      if (tabName === "highlights") html = highlightsTemplate();
+      if (tabName === "ending") html = endingTemplate();
+      panel.innerHTML = html;
+      panelMap.forEach((p, key) => p.classList.toggle("active", key === tabName));
+      setupEditable(panel);
+      animateProgress(panel);
+    }
+
+    function setupEditable(root) {
+      root.querySelectorAll("[data-editable-target]").forEach(el => {
+        const path = el.dataset.editableTarget;
+        const value = getValueByPath(path);
+        if (el.tagName === "H2" || el.tagName === "H3" || el.tagName === "H4" || el.tagName === "P" || el.tagName === "SPAN" || el.tagName === "DIV") {
+          if (el.textContent !== value) el.textContent = value;
+        }
+        el.dataset.editable = state.editMode ? "true" : "false";
+        el.contentEditable = state.editMode ? "true" : "false";
+        if (state.editMode && !el.dataset.bound) {
+          el.dataset.bound = "1";
+          el.addEventListener("input", () => {
+            setValueByPath(path, el.innerText.replace(/\u00a0/g, " ").trimEnd());
+            renderHeader();
+          });
+        }
+      });
+    }
+
+    function animateProgress(root) {
+      requestAnimationFrame(() => {
+        root.querySelectorAll("[data-progress]").forEach(el => {
+          el.style.width = `${el.dataset.progress}%`;
+        });
+      });
+    }
+
+    function copyAll() {
+      const lines = [];
+      lines.push("中期答辩展示网页");
+      lines.push(data.meta.title);
+      lines.push(data.meta.subtitle);
+      lines.push(`作者：${data.meta.author}`);
+      lines.push(`导师：${data.meta.advisor}`);
+      lines.push(`项目：${data.meta.case}`);
+      lines.push("");
+      lines.push("概览");
+      lines.push(data.tabs.overview.lead);
+      lines.push(`核心研究问题：${data.tabs.overview.question}`);
+      data.tabs.overview.subquestions.forEach((q, i) => {
+        lines.push(`${i + 1}. ${q.title} - ${q.desc}`);
+      });
+      lines.push("");
+      lines.push("研究框架");
+      data.tabs.overview.framework.forEach(item => lines.push(`${item.k}：${item.v}`));
+      lines.push("");
+      lines.push("已完成");
+      data.tabs.completed.progress.forEach(item => lines.push(`${item.title}：${item.value}% · ${item.state}`));
+      data.tabs.completed.chapters.forEach(chapter => {
+        lines.push(chapter.title);
+        chapter.blocks.forEach(block => {
+          lines.push(`- ${block.title}`);
+          block.items.forEach(i => lines.push(`  · ${i}`));
+        });
+      });
+      lines.push("");
+      lines.push("待完成");
+      data.tabs.todo.chapters.forEach(chapter => {
+        lines.push(chapter.title);
+        lines.push(`核心论点：${chapter.core}`);
+        chapter.sections.forEach(s => lines.push(`- ${s}`));
+        lines.push(`所需资料：${chapter.materials}`);
+      });
+      lines.push("");
+      lines.push("研究进度与计划");
+      data.tabs.plan.timeline.forEach(item => lines.push(`${item.time}｜${item.title}｜${item.detail}`));
+      lines.push("");
+      lines.push("待完成访谈计划");
+      data.tabs.plan.interviews.forEach(item => lines.push(`${item.subject}｜${item.count}｜${item.topic}`));
+      lines.push("");
+      lines.push("亮点与创新点");
+      data.tabs.highlights.cards.forEach(card => {
+        lines.push(card.title);
+        card.items.forEach(i => lines.push(`- ${i}`));
+      });
+      lines.push("");
+      lines.push("结语");
+      lines.push(data.tabs.ending.title);
+      lines.push(data.tabs.ending.body);
+      return lines.join("\n");
+    }
+
+    function syncMeta() {
+      renderHeader();
+      renderTab(state.currentTab);
+    }
+
+    tabs.forEach(btn => {
+      btn.addEventListener("click", () => renderTab(btn.dataset.tab));
+    });
+
+    mobileTab.innerHTML = tabs.map(btn => `<option value="${btn.dataset.tab}">${btn.textContent}</option>`).join("");
+    mobileTab.addEventListener("change", () => renderTab(mobileTab.value));
+
+    editToggle.addEventListener("click", () => {
+      state.editMode = !state.editMode;
+      editToggle.dataset.on = String(state.editMode);
+      editLabel.textContent = state.editMode ? "编辑模式开启" : "编辑模式关闭";
+      syncMeta();
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      const text = copyAll();
+      try {
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "已复制";
+        setTimeout(() => copyBtn.textContent = "复制全部内容", 1200);
+      } catch {
+        clipboardSink.value = text;
+        clipboardSink.focus();
+        clipboardSink.select();
+        document.execCommand("copy");
+        copyBtn.textContent = "已复制";
+        setTimeout(() => copyBtn.textContent = "复制全部内容", 1200);
+      }
+    });
+
+    renderHeader();
+    renderTab(state.currentTab);
+    mobileTab.value = state.currentTab;
+  </script>
+</body>
+</html>
